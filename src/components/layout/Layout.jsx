@@ -13,7 +13,6 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import MenuIcon from '@mui/icons-material/Menu';
 import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
 import MailIcon from '@mui/icons-material/Mail';
 import { Link, useLocation, useNavigate, Outlet } from 'react-router-dom';
 import { Button } from '@mui/material';
@@ -22,9 +21,9 @@ import Cookies from 'js-cookie';
 const drawerWidth = 240;
 
 function Layout(props) {
-  const { window } = props;
+  const { window: containerWindow } = props;
   const navigate = useNavigate();
-  const [mobileOpen, setMobileOpen] = React.useState(false);  // Quản lý trạng thái mở/đóng của drawer
+  const [mobileOpen, setMobileOpen] = React.useState(false);
   const location = useLocation();
   const path = location.pathname;
   const page = path.split("/")[1];
@@ -66,23 +65,20 @@ function Layout(props) {
     </div>
   );
 
-  const container = window !== undefined ? () => window().document.body : undefined;
+  const container = containerWindow !== undefined ? () => containerWindow().document.body : undefined;
 
   return (
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
-      <AppBar
-        position="fixed"
-        sx={{
-          width: { sm: `100%` }
-        }}
-      >
+
+      {/* AppBar luôn có icon menu */}
+      <AppBar position="fixed" sx={{ width: '100%' }}>
         <Toolbar>
           <IconButton
             color="inherit"
             aria-label="open drawer"
             edge="start"
-            onClick={handleDrawerToggle}  // Kích hoạt mở/đóng drawer
+            onClick={handleDrawerToggle}
             sx={{ mr: 2 }}
           >
             <MenuIcon />
@@ -95,34 +91,27 @@ function Layout(props) {
         </Toolbar>
       </AppBar>
 
-      <Box
-        component="nav"
-        // sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
-        aria-label="mailbox folders"
+      {/* Drawer dạng trượt cho cả mobile và desktop */}
+      <Drawer
+        container={container}
+        variant="temporary"
+        open={mobileOpen}
+        onClose={handleDrawerToggle}
+        ModalProps={{ keepMounted: true }}
+        sx={{
+          display: 'block',
+          '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+        }}
       >
-        {/* Drawer trượt ra trên cả mobile và desktop */}
-        <Drawer
-          container={container}
-          variant="temporary"
-          open={mobileOpen}  // Trạng thái mở/đóng của Drawer
-          onClose={handleDrawerToggle}  // Khi đóng Drawer
-          ModalProps={{
-            keepMounted: true, // Đảm bảo hiệu suất trên mobile
-          }}
-          sx={{
-            display: 'block',  // Drawer luôn hiển thị
-            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
-          }}
-        >
-          {drawer}
-        </Drawer>
-      </Box>
+        {drawer}
+      </Drawer>
 
+      {/* Nội dung chính */}
       <Box
         component="main"
-        sx={{ width: `100%` }}
+        sx={{ flexGrow: 1, width: '100%' }}
       >
-        <Toolbar />
+        <Toolbar /> {/* để đẩy nội dung xuống dưới AppBar */}
         <Outlet />
       </Box>
     </Box>

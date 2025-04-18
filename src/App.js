@@ -76,24 +76,29 @@ function App() {
   return (
     <Provider store={store}>
       <ThemeProvider theme={theme}>
-        <CssBaseline>
-          <StyledEngineProvider injectFirst>
-            <BrowserRouter>
-              {/* <Layout /> */}
-              <Routes>
-                
-                {isAuthenticated ?
-                  <Route path="/" element={isAuthenticated ? <Layout /> : <Navigate to='/login' />}  >
-                    <Route path="/order/:orderId/item" name="Order Items" Component={Item} />
-                    <Route path="/order" name="Cart" Component={Order} />
-                  </Route> : <Route path="/login" name="Login" Component={Login} />}
-              </Routes>
-            </BrowserRouter>
-          </StyledEngineProvider>
-        </CssBaseline>
+        <CssBaseline />
+        <StyledEngineProvider injectFirst>
+          <BrowserRouter>
+            <Routes>
+              {!isAuthenticated ? (
+                <Route path="*" element={<Navigate to="/login" />} />
+              ) : (
+                <>
+                  <Route path="/" element={<Layout />}>
+                    <Route path="order" element={<Order />} />
+                    <Route path="order/:orderId/item" element={<Item />} />
+                    <Route path="/" element={<Navigate to="/order" />} />
+                  </Route>
+                </>
+              )}
+              <Route path="/login" element={<Login />} />
+            </Routes>
+          </BrowserRouter>
+        </StyledEngineProvider>
       </ThemeProvider>
     </Provider>
   );
+  
 }
 
 export default App;
